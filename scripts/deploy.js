@@ -27,24 +27,20 @@ async function main() {
 
   const [deployer] = await hre.ethers.getSigners();
 
-  // Deteksi parseUnits otomatis dari ethers v5 atau v6
-  const utils = hre.ethers.utils || hre.ethers;
-  const parseUnits = utils.parseUnits;
-
-  const supplyInWei = parseUnits(totalSupply, 18);
-
+  const supplyInWei = hre.ethers.parseUnits(totalSupply, 18);
   const ContractFactory = await hre.ethers.getContractFactory("MinimalERC20");
 
   await spinner("⏳ Deploying");
 
   const token = await ContractFactory.deploy(name, symbol, supplyInWei);
-  await token.deployed();
+  await token.waitForDeployment(); // ✅ FIXED: Ethers v6+ pakai ini
 
-  const txHash = token.deployTransaction.hash;
+  const tokenAddress = await token.getAddress();
+  const txHash = token.deploymentTransaction().hash;
   const explorerUrl = `https://sepolia.tea.xyz/tx/${txHash}`;
 
   console.log(`\n✅ Token berhasil dideploy!`);
-  console.log(`📦 Address: ${token.address}`);
+  console.log(`📦 Address: ${tokenAddress}`);
   console.log(`🔗 Explorer: ${explorerUrl}\n`);
 
   const answer = readline.question("Deploy ulang? (y/n): ");
