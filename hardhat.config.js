@@ -2,6 +2,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 module.exports = {
+  defaultNetwork: "tea", // otomatis pake jaringan ini
   solidity: "0.8.24",
   networks: {
     tea: {
