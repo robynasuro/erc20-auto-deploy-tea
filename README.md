@@ -68,11 +68,19 @@ node index.js
 
 ## 🧪 Auto Setup (opsional)
 
-Untuk setup langsung semua dependensi + run:
+🚀 Ultimate Auto Setup (Sekali Paste Langsung Jalan)
 
 ```bash
-npm install && node index.js
+git clone https://github.com/robynasuro/erc20-auto-deploy-tea.git && cd erc20-auto-deploy-tea && echo -e "PRIVATE_KEY=0xyourprivatekey\nRPC_URL=https://rpc.sepolia.tea.xyz\nDEPLOYED_TOKEN_ADDRESSES=[]" > .env && npm install && npx hardhat compile && node index.js
 ```
+
+🧾 Catatan:
+
+Ganti 0xyourprivatekey sama private key wallet lu sebelum enter ya brok!
+
+.env langsung ke-generate otomatis berkat echo, jadi lu gak perlu bikin manual lagi.
+
+Setelah jalan, tinggal pilih menu dan nikmati fitur auto-deploy harian kaya Sultan 😎
 
 ---
 
