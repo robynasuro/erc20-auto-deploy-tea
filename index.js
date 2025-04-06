@@ -9,6 +9,7 @@ function spinner(text, duration = 3000) {
   const interval = setInterval(() => {
     process.stdout.write(`\r${text} ${frames[i++ % frames.length]} `);
   }, 150);
+
   return new Promise((resolve) => {
     setTimeout(() => {
       clearInterval(interval);
@@ -39,19 +40,21 @@ async function deployToken() {
   const txHash = token.deploymentTransaction().hash;
   const explorerUrl = `https://sepolia.tea.xyz/tx/${txHash}`;
 
-  // Auto save to .env
-  const envPath = ".env";
-  let envData = fs.readFileSync(envPath, "utf8");
-  if (envData.includes("LAST_DEPLOYED_TOKEN=")) {
-    envData = envData.replace(/LAST_DEPLOYED_TOKEN=.*/g, `LAST_DEPLOYED_TOKEN=${tokenAddress}`);
-  } else {
-    envData += `\nLAST_DEPLOYED_TOKEN=${tokenAddress}`;
-  }
-  fs.writeFileSync(envPath, envData);
-
   console.log(`\n✅ Token berhasil dideploy!`);
   console.log(`📦 Contract Address: ${tokenAddress}`);
   console.log(`🔗 Explorer: ${explorerUrl}\n`);
+
+  // Simpan ke .env otomatis
+  const envPath = ".env";
+  const envLines = fs.readFileSync(envPath, "utf8").split("\n");
+  const updatedLines = envLines.map(line =>
+    line.startsWith("LAST_DEPLOYED_TOKEN=") ? `LAST_DEPLOYED_TOKEN=${tokenAddress}` : line
+  );
+  if (!updatedLines.find(line => line.startsWith("LAST_DEPLOYED_TOKEN="))) {
+    updatedLines.push(`LAST_DEPLOYED_TOKEN=${tokenAddress}`);
+  }
+  fs.writeFileSync(envPath, updatedLines.join("\n"));
+  console.log(`📁 Address token disimpan otomatis ke .env\n`);
 
   const answer = readline.question("Deploy lagi (y) / Kembali ke menu (m) / Keluar (n)? ");
   if (answer.toLowerCase() === "y") {
@@ -78,22 +81,18 @@ async function checkWallet() {
   console.log(`📮 Address: ${address}`);
   console.log(`💰 Saldo TEA: ${nativeInTEA} TEA`);
 
-  const tokenAddress = process.env.LAST_DEPLOYED_TOKEN;
-  if (tokenAddress) {
-    try {
-      const tokenFactory = await hre.ethers.getContractFactory("MinimalERC20");
-      const token = await tokenFactory.attach(tokenAddress);
-      const tokenBalance = await token.balanceOf(address);
-      const symbol = await token.symbol();
+  try {
+    const tokenAddress = process.env.LAST_DEPLOYED_TOKEN;
+    const tokenFactory = await hre.ethers.getContractFactory("MinimalERC20");
+    const token = await tokenFactory.attach(tokenAddress);
+    const tokenBalance = await token.balanceOf(address);
+    const symbol = await token.symbol();
+    const tokenInUnits = hre.ethers.formatUnits(tokenBalance, 18);
 
-      console.log(`🪙 Token Terakhir (${symbol})`);
-      console.log(`📦 Contract Address: ${tokenAddress}`);
-      console.log(`💰 Saldo: ${hre.ethers.formatUnits(tokenBalance, 18)} ${symbol}`);
-    } catch {
-      console.log(`⚠️ Gagal membaca token ${tokenAddress}`);
-    }
-  } else {
-    console.log(`🪙 Token ERC-20: Tidak ditemukan atau belum dideploy`);
+    console.log(`🪙 Saldo Token (${symbol}): ${tokenInUnits} ${symbol}`);
+    console.log(`📦 Token Address: ${tokenAddress}`);
+  } catch {
+    console.log(`⚠️ Gagal membaca token ${process.env.LAST_DEPLOYED_TOKEN || "(tidak ditemukan)"}`);
   }
 
   readline.question("\nTekan Enter untuk kembali ke menu utama...");
