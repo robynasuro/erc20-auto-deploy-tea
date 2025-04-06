@@ -5,7 +5,7 @@ module.exports = {
   defaultNetwork: "tea",
   networks: {
     tea: {
-      url: "https://rpc.sepolia.tea.xyz",
+      url: "https://tea-sepolia.g.alchemy.com/public",
       accounts: [process.env.PRIVATE_KEY],
     },
   },
