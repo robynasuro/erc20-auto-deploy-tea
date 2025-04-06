@@ -1,144 +1,98 @@
-# 🧠 Auto Deploy ERC-20 (Minimal)
+# 🚀 ERC-20 Auto Deploy for TEA Sepolia
 
-Script interaktif untuk deploy token ERC-20 secara cepat ke jaringan **TEA Sepolia** dengan animasi loading dan tampilan output yang kece.
+Script sederhana untuk **deploy token ERC-20 secara otomatis** di jaringan **TEA Sepolia** menggunakan Hardhat.
 
 ---
 
 ## ✨ Fitur
 
-- Input nama token, simbol, dan total supply via CLI  
-- Animasi loading spinner saat proses deploy  
-- Link explorer langsung muncul setelah deploy  
-- Bisa deploy ulang tanpa restart script  
-- Auto konek ke wallet dari `.env`
+- Input interaktif: nama token, simbol, dan total supply
+- Otomatis menggunakan konfigurasi dari `.env`
+- Menampilkan hasil TX lengkap dengan explorer link
+- Opsi untuk deploy ulang langsung dari terminal
+- Animasi loading spinner (UX friendly)
 
 ---
 
-## ⚙️ Requirement VPS
+## ⚙️ VPS Requirements
 
-### 1. Install Node.js (Minimal Versi 18)
-
-Jika muncul error seperti:
-
-```
-SyntaxError: Unexpected token '('
-```
-
-Berarti Node.js versi kamu terlalu jadul. Jalankan ini:
+### 1. Ubuntu (disarankan Ubuntu 20.04 / 22.04)
+### 2. RAM minimal 1GB
+### 3. Install Node.js (minimal versi 18)
 
 ```bash
+sudo apt update
 sudo apt remove nodejs -y
 sudo apt autoremove -y
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install nodejs -y
 ```
 
-### 2. Install Dependensi
+---
+
+## 🧰 Cara Install & Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/robynasuro/erc20-auto-deploy-tea.git
+cd erc20-auto-deploy-tea
+```
+
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-Jika ada error seperti `readline-sync` not found:
+### 3. Setup File `.env`
 
-```bash
-npm install readline-sync dotenv @openzeppelin/contracts
-```
-
----
-
-## 📁 Struktur File Penting
-
-```
-auto-deploy-erc20/
-├── contracts/
-│   └── MinimalERC20.sol
-├── scripts/
-│   └── deploy.js
-├── .env
-├── hardhat.config.js
-└── README.md
-```
-
----
-
-## ⚙️ Setup File
-
-### .env
-
-Buat file `.env` di root project:
+Buat file `.env` di folder root:
 
 ```env
+RPC_URL=https://rpc-sepolia.tea.xyz
 PRIVATE_KEY=0xyourprivatekey
-RPC_URL=https://sepolia.tea.xyz
 ```
 
-> PRIVATE_KEY jangan pernah dikasih ke orang lain brok ⚠️
+> Jangan pernah share `PRIVATE_KEY` ke orang lain ya brok!
 
 ---
 
-## 🚀 Menjalankan Script
-
-### 1. Jalankan deploy.js
+## 🧪 Jalankan Script
 
 ```bash
 npx hardhat run scripts/deploy.js --network custom
 ```
 
-Script akan minta input:
-- Nama token (contoh: BULAKTEA)
-- Simbol token (contoh: BLKTEA)
-- Total supply (contoh: 6969696969)
+Kamu akan diminta input:
 
-Contoh output:
+- Nama token
+- Simbol token
+- Total supply
+
+Output akan menampilkan:
 
 ```
 ✅ Token berhasil dideploy!
-📦 Address: 0x300e29...
-🔗 Explorer: https://sepolia.tea.xyz/tx/0x781f64...
+📦 Address: 0x...
+🔗 Explorer: https://sepolia.tea.xyz/tx/0x...
 ```
 
-Akan muncul juga pertanyaan:
+Lalu akan muncul pertanyaan:
 
 ```
-Deploy ulang? (y/n):
+Deploy ulang? (y/n)
 ```
 
-Kalau jawab `y`, script akan langsung ulang dari awal.
+Ketik `y` jika ingin deploy token baru lagi.
 
 ---
 
-## 🔧 Troubleshooting
+## 🐛 Troubleshooting
 
-### HH100: Network custom doesn't exist
+### ❌ Error: Cannot find module 'readline-sync'
 
-Pastikan di `hardhat.config.js` sudah ada:
-
-```js
-require("dotenv").config();
-
-module.exports = {
-  solidity: "0.8.24",
-  networks: {
-    custom: {
-      url: process.env.RPC_URL,
-      accounts: [process.env.PRIVATE_KEY],
-    },
-  },
-};
-```
-
----
-
-### HH411: @openzeppelin/contracts not installed
-
-```bash
-npm install @openzeppelin/contracts
-```
-
----
-
-### Module 'readline-sync' not found
+Install modul-nya:
 
 ```bash
 npm install readline-sync
@@ -146,26 +100,34 @@ npm install readline-sync
 
 ---
 
-## 👨‍💻 Tips Tambahan
+### ❌ Error: Network custom doesn't exist
 
-- Jalankan script via `screen` di VPS agar tetap jalan walau terminal ditutup:
+Pastikan konfigurasi `hardhat.config.js` sudah benar.
+
+---
+
+### ❌ Error: Library @openzeppelin/contracts not installed
+
+Install OpenZeppelin:
 
 ```bash
-screen -S deploy
-npx hardhat run scripts/deploy.js --network custom
+npm install @openzeppelin/contracts
 ```
 
-- Keluar dari screen: `Ctrl+A`, lalu `D`  
-- Balik lagi ke screen: `screen -r deploy`
+---
+
+## 🧼 Tips Keamanan
+
+- Jangan pernah upload `.env` ke publik
+- Selalu cek kembali input token sebelum deploy
+- Gunakan wallet khusus untuk testing (jangan pakai wallet utama)
 
 ---
 
-## 📦 MinimalERC20.sol
+## 📎 Credits
 
-File kontrak minimal sudah tersedia di folder `contracts/MinimalERC20.sol` dan otomatis terhubung ke script deploy.
+Build with ❤️ for TEA Sepolia Network Community
 
 ---
 
-## 🚀 Happy Deploying!
-
-Build your token empire on TEA Sepolia 🍵💸
+Happy Deploying! 🚀
