@@ -1,6 +1,8 @@
 const hre = require("hardhat");
 const readline = require("readline-sync");
 require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
 
 function spinner(text, duration = 3000) {
   const frames = ['|', '/', '-', '\\'];
@@ -39,8 +41,19 @@ async function deployToken() {
   const txHash = token.deploymentTransaction().hash;
   const explorerUrl = `https://sepolia.tea.xyz/tx/${txHash}`;
 
+  // ✅ Simpan contract ke .env (replace jika sudah ada)
+  const envPath = path.resolve(__dirname, ".env");
+  let envContent = fs.readFileSync(envPath, "utf8");
+  if (envContent.includes("LAST_DEPLOYED_TOKEN=")) {
+    envContent = envContent.replace(/LAST_DEPLOYED_TOKEN=.*/g, `LAST_DEPLOYED_TOKEN=${tokenAddress}`);
+  } else {
+    envContent += `\nLAST_DEPLOYED_TOKEN=${tokenAddress}\n`;
+  }
+  fs.writeFileSync(envPath, envContent);
+
   console.log(`\n✅ Token berhasil dideploy!`);
   console.log(`📦 Contract Address: ${tokenAddress}`);
+  console.log(`🔗 TX Hash: ${txHash}`);
   console.log(`🔗 Explorer: ${explorerUrl}\n`);
 
   const answer = readline.question("Deploy lagi (y) / Kembali ke menu (m) / Keluar (n)? ");
@@ -68,18 +81,29 @@ async function checkWallet() {
   console.log(`📮 Address: ${address}`);
   console.log(`💰 Saldo TEA: ${nativeInTEA} TEA`);
 
-  try {
-    const tokenFactory = await hre.ethers.getContractFactory("MinimalERC20");
-    const token = await tokenFactory.attach(process.env.LAST_DEPLOYED_TOKEN);
-    const tokenBalance = await token.balanceOf(address);
-    const symbol = await token.symbol();
+  const tokenAddress = process.env.LAST_DEPLOYED_TOKEN;
+  if (tokenAddress) {
+    try {
+      const abi = [
+        "function name() view returns (string)",
+        "function symbol() view returns (string)",
+        "function balanceOf(address) view returns (uint256)"
+      ];
+      const token = new hre.ethers.Contract(tokenAddress, abi, signer);
+      const symbol = await token.symbol();
+      const balance = await token.balanceOf(address);
 
-    console.log(`🪙 Saldo Token: ${hre.ethers.formatUnits(tokenBalance, 18)} ${symbol}`);
-  } catch {
-    console.log(`🪙 Token ERC-20: Tidak ditemukan atau belum dideploy`);
+      console.log(`🪙 Token Terakhir (${symbol})`);
+      console.log(`📦 Contract Address: ${tokenAddress}`);
+      console.log(`💰 Saldo: ${hre.ethers.formatUnits(balance, 18)} ${symbol}`);
+    } catch (err) {
+      console.log(`⚠️ Gagal membaca token ${tokenAddress}`);
+    }
+  } else {
+    console.log("ℹ️ Belum ada token yang dideploy.");
   }
 
-  const back = readline.question("\nTekan Enter untuk kembali ke menu utama...");
+  readline.question("\nTekan Enter untuk kembali ke menu utama...");
   await mainMenu();
 }
 
