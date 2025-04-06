@@ -27,7 +27,11 @@ async function main() {
 
   const [deployer] = await hre.ethers.getSigners();
 
-  const supplyInWei = hre.ethers.utils.parseUnits(totalSupply, 18);
+  // Deteksi parseUnits otomatis dari ethers v5 atau v6
+  const utils = hre.ethers.utils || hre.ethers;
+  const parseUnits = utils.parseUnits;
+
+  const supplyInWei = parseUnits(totalSupply, 18);
 
   const ContractFactory = await hre.ethers.getContractFactory("MinimalERC20");
 
