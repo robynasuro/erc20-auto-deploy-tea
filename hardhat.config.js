@@ -5,9 +5,9 @@ module.exports = {
   defaultNetwork: "tea",
   networks: {
     tea: {
-      url: "https://tea-sepolia.g.alchemy.com/public",
-      accounts: [process.env.PRIVATE_KEY],
+      url: process.env.RPC_URL || "",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
-  solidity: "0.8.20",
+  solidity: "0.8.24",
 };
