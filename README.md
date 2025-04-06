@@ -1,6 +1,6 @@
-# 🧠 Auto Deploy ERC-20 (Minimal)
+# 💥 Auto ERC-20 Token Deployer for TEA Sepolia
 
-Script interaktif untuk deploy token ERC-20 secara cepat ke jaringan **TEA Sepolia** dengan animasi loading dan tampilan output yang kece.
+A simple Hardhat-based script to auto deploy custom ERC-20 tokens on TEA Sepolia network.
 
 ---
 
