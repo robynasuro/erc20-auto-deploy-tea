@@ -2,11 +2,12 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 module.exports = {
-  solidity: "0.8.24",
+  defaultNetwork: "tea",
   networks: {
     tea: {
-      url: process.env.RPC_URL,
-      accounts: [process.env.PRIVATE_KEY]
-    }
-  }
+      url: "https://rpc.sepolia.tea.xyz",
+      accounts: [process.env.PRIVATE_KEY],
+    },
+  },
+  solidity: "0.8.20",
 };
